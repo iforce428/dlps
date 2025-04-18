@@ -18,6 +18,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'secret';
 const AES_SECRET = process.env.AES_SECRET || 'secret';
 const EMAIL_USER = process.env.EMAIL_USER;
 const EMAIL_PASS = process.env.EMAIL_PASS;
+app.set('trust proxy', true);
 
 // Email transporter configuration
 const transporter = nodemailer.createTransport({
@@ -35,7 +36,7 @@ const generateVerificationToken = () => {
 
 // Send verification email
 const sendVerificationEmail = async (email, token) => {
-  const verificationLink = `http://localhost:${PORT}/verify-email?token=${encodeURIComponent(token)}`;
+  const verificationLink = `https://be16-2404-160-8207-8fe6-7436-83d0-2505-932e.ngrok-free.app/verify-email?token=${encodeURIComponent(token)}`;
   
   const mailOptions = {
     from: EMAIL_USER,
@@ -97,7 +98,14 @@ db.run('CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, username TEXT 
 db.run('CREATE TABLE IF NOT EXISTS files (id INTEGER PRIMARY KEY, user_id INTEGER, filename TEXT, original_name TEXT, description TEXT, upload_ip TEXT, FOREIGN KEY(user_id) REFERENCES users(id))');
 
 // Hash IP Function
-const hashIp = (ip) => crypto.createHash('sha256').update(ip).digest('hex');
+const hashIp = (ip) => {
+  // For IPv6 addresses, only use the first 3 blocks
+  if (ip.includes(':')) {
+    const blocks = ip.split(':');
+    ip = blocks.slice(0, 3).join(':');
+  }
+  return crypto.createHash('sha256').update(ip).digest('hex');
+};
 
 // JWT Middleware
 const authenticateToken = (req, res, next) => {
@@ -386,6 +394,7 @@ app.delete('/file/:filename', authenticateToken, (req, res) => {
 app.get('/files', authenticateToken, (req, res) => {
   const { id: userId } = req.user;
   const userIpHash = hashIp(req.ip);
+  console.log(req.ip);
 
   db.all('SELECT filename, original_name, description, upload_ip FROM files WHERE user_id = ?', [userId], (err, files) => {
     if (err) return res.status(500).json({ message: 'Failed to retrieve files' });
