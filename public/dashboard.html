@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <!-- Basic -->
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <!-- Mobile Metas -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <!-- Site Metas -->
+  <meta name="keywords" content="Dashboard" />
+  <meta name="description" content="Dashboard Page for DLP" />
+  <meta name="author" content="Finexo" />
+  <link rel="shortcut icon" href="images/favicon.png" type="">
+
+  <title>Dashboard - DLP</title>
+
+  <!-- bootstrap core css -->
+  <link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
+
+  <!-- fonts style -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+  <!-- font awesome style -->
+  <link href="css/font-awesome.min.css" rel="stylesheet" />
+
+  <!-- Custom styles for this template -->
+  <link href="css/style.css" rel="stylesheet" />
+  <!-- responsive style -->
+  <link href="css/responsive.css" rel="stylesheet" />
+  <style>
+    /* Custom styles for the table */
+    #fileTable {
+      width: 100%;
+    }
+
+    #fileTable th, #fileTable td {
+      padding: 8px;
+      text-align: center;
+    }
+
+    #fileTable th:first-child, #fileTable td:first-child {
+      width: 30%; /* Adjust the width of the first column */
+    }
+
+    #fileTable th:nth-child(2), #fileTable td:nth-child(2) {
+      width: 30%; /* Adjust the width of the description column */
+    }
+
+    #fileTable th:nth-child(3), #fileTable td:nth-child(3) {
+      width: 20%; /* Adjust the width of the IP status column */
+    }
+
+    #fileTable th:last-child, #fileTable td:last-child {
+      width: 20%; /* Adjust the width of the last column */
+    }
+
+    .btn {
+      margin: 0 5px; /* Add some space between buttons */
+    }
+
+    /* Custom styles for the IP status circle */
+    .ip-status {
+      display: inline-block;
+      width: 15px; /* Increased size */
+      height: 15px; /* Increased size */
+      border-radius: 50%;
+      margin: 0 auto; /* Center the circle */
+    }
+
+    .ip-status.same {
+      background-color: green;
+    }
+
+    .ip-status.different {
+      background-color: red;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- header section strats -->
+  <header class="header_section">
+    <div class="container-fluid">
+      <nav class="navbar navbar-expand-lg custom_nav-container">
+        <a class="navbar-brand" href="/">
+          <span>DLP</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav">
+            <li class="nav-item active">
+              <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="dashboard">Dashboard</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="upload">Upload</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="login"><i class="fa fa-user" aria-hidden="true"></i> Login</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <div class="hero_area">
+
+    <!-- dashboard section -->
+    <section class="dashboard_section layout_padding">
+      <div class="container">
+        <div class="heading_container heading_center">
+          <h2>
+            Your <span>Files</span>
+          </h2>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <table class="table table-striped" id="fileTable">
+              <thead>
+                <tr>
+                  <th>File Name</th>
+                  <th>Description</th>
+                  <th>IP Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- File list will be populated here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- end dashboard section -->
+  </div>
+
+  <!-- footer section -->
+  <section class="footer_section">
+    <div class="container">
+      <p>
+        &copy; <span id="displayYear"></span> All Rights Reserved By
+        <a href="https://html.design/">Free Html Templates</a>
+      </p>
+    </div>
+  </section>
+  <!-- footer section -->
+
+  <!-- jQery -->
+  <script type="text/javascript" src="js/jquery-3.4.1.min.js"></script>
+  <!-- popper js -->
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+  <!-- bootstrap js -->
+  <script type="text/javascript" src="js/bootstrap.js"></script>
+  <!-- custom js -->
+  <script type="text/javascript" src="js/custom.js"></script>
+  <!-- Dashboard JS -->
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const fileTableBody = document.querySelector('#fileTable tbody');
+      const loginOverlay = document.getElementById('loginOverlay');
+      const loginLink = document.querySelector('.nav-link[href="login"]'); // A
+
+      function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+      }
+
+      const username = getCookie('name');
+      if (username) {
+        // Update login link to show username
+        loginLink.innerHTML = `<i class="fa fa-user" aria-hidden="true"></i> ${username}`;
+        loginLink.href = 'login'; // You might want to redirect to the dashboard or user profile page
+      } else {
+        loginLink.innerHTML = `<i class="fa fa-user" aria-hidden="true"></i> Login`;
+        loginLink.href = 'login'; // Ensure it goes to the login page
+      }
+
+      try {
+        const response = await fetch('/files', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${getCookie('token')}`
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.files && data.files.length > 0) {
+            data.files.forEach(file => {
+              const row = document.createElement('tr');
+              row.innerHTML = `
+                <td>${file.original_name}</td>
+                <td>${file.description || 'No description'}</td>
+                <td>
+                  <span class="ip-status ${file.ip_status === 'same' ? 'same' : 'different'}"></span>
+                </td>
+                <td>
+                  <button class="btn btn-primary download-btn" data-filename="${file.filename}" data-ip-status="${file.ip_status}">Download</button>
+                  <button class="btn btn-danger delete-btn" data-filename="${file.filename}">Delete</button>
+                </td>
+              `;
+              fileTableBody.appendChild(row);
+            });
+          } else {
+            fileTableBody.innerHTML = '<tr><td colspan="4">No files found.</td></tr>';
+          }
+        } else {
+          const error = await response.json();
+          fileTableBody.innerHTML = `<tr><td colspan="4">${error.message}</td></tr>`;
+        }
+      } catch (error) {
+        console.error('Error fetching files:', error);
+        fileTableBody.innerHTML = '<tr><td colspan="4">An error occurred while fetching files.</td></tr>';
+      }
+
+      // Add event listeners for download and delete buttons
+      fileTableBody.addEventListener('click', async (e) => {
+        if (e.target.classList.contains('download-btn')) {
+          const filename = e.target.getAttribute('data-filename');
+          const ipStatus = e.target.getAttribute('data-ip-status');
+
+          if (ipStatus === 'same') {
+            window.location.href = `/file/${filename}`;
+          } else {
+            alert('Download not allowed: Your IP does not match the registered IP.');
+          }
+        } else if (e.target.classList.contains('delete-btn')) {
+          const filename = e.target.getAttribute('data-filename');
+          const confirmDelete = confirm('Are you sure you want to delete this file?');
+          if (confirmDelete) {
+            try {
+              const response = await fetch(`/file/${filename}`, {
+                method: 'DELETE',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${getCookie('token')}`
+                }
+              });
+
+              if (response.ok) {
+                alert('File deleted successfully');
+                location.reload(); // Refresh the page to update the file list
+              } else {
+                const error = await response.json();
+                alert(error.message);
+              }
+            } catch (error) {
+              console.error('Error deleting file:', error);
+              alert('An error occurred while deleting the file.');
+            }
+          }
+        }
+      });
+    });
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <!-- Basic -->
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <!-- Mobile Metas -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <!-- Site Metas -->
+  <meta name="keywords" content="Upload" />
+  <meta name="description" content="Upload Page for Finexo" />
+  <meta name="author" content="Finexo" />
+  <link rel="shortcut icon" href="images/favicon.png" type="">
+
+  <title> Upload - DLP </title>
+
+  <!-- bootstrap core css -->
+  <link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
+
+  <!-- fonts style -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+  <!-- font awesome style -->
+  <link href="css/font-awesome.min.css" rel="stylesheet" />
+
+  <!-- Custom styles for this template -->
+  <link href="css/style.css" rel="stylesheet" />
+  <!-- responsive style -->
+  <link href="css/responsive.css" rel="stylesheet" />
+
+</head>
+
+<style>
+  .disabled-container {
+    position: relative;
+  }
+
+  .disabled-container::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.8);
+    /* Semi-transparent white overlay */
+    z-index: 10;
+  }
+
+  .login-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    font-size: 1.5rem;
+    color: #000;
+    /* Dark text for better visibility */
+    z-index: 11;
+    /* Above the overlay */
+  }
+</style>
+
+<body>
+
+  <!-- header section starts -->
+  <header class="header_section">
+    <div class="container-fluid">
+      <nav class="navbar navbar-expand-lg custom_nav-container">
+        <a class="navbar-brand" href="/">
+          <span>DLP</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav">
+            <li class="nav-item active">
+              <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="dashboard">Dashboard</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="upload">Upload</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="login"><i class="fa fa-user" aria-hidden="true"></i> Login</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <div class="hero_area">
+
+    <!-- upload section -->
+    <section class="upload_section layout_padding">
+      <div class="container">
+        <div class="heading_container heading_center">
+          <h2>
+            Secure <span>File Upload</span>
+          </h2>
+          <p>
+            Upload your file securely. Files are encrypted and protected with steganography. Ensure your IP address is
+            the same for future access.
+          </p>
+        </div>
+        <div class="row">
+          <div class="col-md-8 mx-auto">
+            <div class="upload-container" id="uploadContainer">
+              <div class="login-overlay" id="loginOverlay" style="display: none;">
+                Please login first to upload files.
+              </div>
+              <form id="uploadForm" action="/upload" method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+                  <label for="file">Select File to Upload</label>
+                  <input type="file" class="form-control" id="file" name="file" required>
+                </div>
+                <div class="form-group">
+                  <label for="description">File Description (Optional)</label>
+                  <textarea class="form-control" id="description" name="description"
+                    placeholder="Add a brief description"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Upload</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- end upload section -->
+  </div>
+
+  <!-- footer section -->
+  <section class="footer_section">
+    <div class="container">
+      <p>
+        &copy; <span id="displayYear"></span> All Rights Reserved By
+        <a href="https://html.design/">Free Html Templates</a>
+      </p>
+    </div>
+  </section>
+  <!-- footer section -->
+
+  <!-- jQery -->
+  <script type="text/javascript" src="js/jquery-3.4.1.min.js"></script>
+  <!-- popper js -->
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous">
+    </script>
+  <!-- bootstrap js -->
+  <script type="text/javascript" src="js/bootstrap.js"></script>
+  <!-- custom js -->
+  <script type="text/javascript" src="js/custom.js"></script>
+  <!-- IP Capture JS -->
+  <script>
+    document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const form = document.getElementById('uploadForm');
+      const formData = new FormData(form);
+
+      try {
+        const response = await fetch('/upload', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          alert(result.message);
+        } else {
+          const error = await response.json();
+          alert(error.message);
+        }
+      } catch (error) {
+        console.error('Error during file upload:', error);
+        alert('An error occurred during file upload.');
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const uploadContainer = document.getElementById('uploadContainer');
+      const loginOverlay = document.getElementById('loginOverlay');
+      const uploadForm = document.getElementById('uploadForm');
+      const loginLink = document.querySelector('.nav-link[href="login"]'); // A
+
+      // Improved getCookie function
+      function getCookie(name) {
+        const cookieArray = document.cookie.split('; ');
+        for (let i = 0; i < cookieArray.length; i++) {
+          const cookie = cookieArray[i].split('=');
+          if (cookie[0] === name) {
+            return decodeURIComponent(cookie[1]);
+          }
+        }
+        return null; // If cookie doesn't exist
+      }
+
+      const username = getCookie('name');
+      if (username) {
+        // Update login link to show username
+        loginLink.innerHTML = `<i class="fa fa-user" aria-hidden="true"></i> ${username}`;
+        loginLink.href = 'login'; // You might want to redirect to the dashboard or user profile page
+      } else {
+        loginLink.innerHTML = `<i class="fa fa-user" aria-hidden="true"></i> Login`;
+        loginLink.href = 'login'; // Ensure it goes to the login page
+      }
+
+      // Check for the token in cookies
+      const token = getCookie('token'); // Assuming the token is stored in a cookie named 'token'
+      console.log('Token from cookie:', token);
+
+      // Print all cookies for debugging
+      console.log('Cookies:', document.cookie);
+
+      if (!token) {
+        // If no token, disable the form and show the overlay
+        uploadContainer.classList.add('disabled-container');
+        loginOverlay.style.display = 'block';
+
+        // Disable all form elements
+        const formElements = uploadForm.elements;
+        for (let i = 0; i < formElements.length; i++) {
+          formElements[i].disabled = true;
+        }
+
+        // Prevent form submission
+        uploadForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          alert('Please login first to upload files.');
+        });
+      } else {
+        // If token exists, enable the form
+        uploadContainer.classList.remove('disabled-container');
+        loginOverlay.style.display = 'none';
+
+        // Enable all form elements
+        const formElements = uploadForm.elements;
+        for (let i = 0; i < formElements.length; i++) {
+          formElements[i].disabled = false;
+        }
+      }
+    });
+  </script>
+
+</body>
+
+</html>
